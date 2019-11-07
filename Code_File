@@ -1,0 +1,114 @@
+using System;
+
+namespace CarValue
+{
+    class MainClass
+    {
+
+        public static void Main(string[] args)
+        {
+            Car car = new Car(10000, 1, 5000, 2, 1);
+            PriceDeterminator pDet = new PriceDeterminator();
+            decimal value = pDet.DetermineCarPrice(car);
+
+
+            Console.WriteLine(" Final Car Price is {0:C2}  ", value);
+        }
+    }
+
+    public class Car
+    {
+        public decimal PurchaseValue { get; set; }
+        public int AgeInMonths { get; set; }
+        public int NumberOfMiles { get; set; }
+        public int NumberOfPreviousOwners { get; set; }
+        public int NumberOfCollisions { get; set; }
+
+        public Car(decimal currentValue, int ageInMonths, int miles, int NoOfPreviousOwners, int NoOfCollisons)
+        {
+            PurchaseValue = currentValue;
+            AgeInMonths = ageInMonths;
+            NumberOfMiles = miles;
+            NumberOfPreviousOwners = NoOfPreviousOwners;
+            NumberOfCollisions = NoOfCollisons;
+        }
+
+    }
+
+    public class PriceDeterminator
+    {
+        private decimal _FinalCarValue;
+        private decimal _CurrentCarValue;
+        private int _ageInMonths, _miles, _NoOfPreviousOwners, _NoOfCollisons;
+
+
+        public decimal DetermineCarPrice(Car objCar)
+        {
+            _CurrentCarValue = objCar.PurchaseValue;
+            _ageInMonths = objCar.AgeInMonths;
+            _miles = objCar.NumberOfMiles;
+            _NoOfPreviousOwners = objCar.NumberOfPreviousOwners;
+            _NoOfCollisons = objCar.NumberOfCollisions;
+
+            CalculateCarValueUsingAge(_ageInMonths);
+
+            CalculateCarValueUsingMiles(_miles);
+
+            if (_NoOfPreviousOwners >= 2)
+            {
+                CalculateCarValueUsingPreviousOwner(_NoOfPreviousOwners);
+                CalculateCarValueUsingCollison(_NoOfCollisons);
+
+            }
+            else if (_NoOfPreviousOwners == 0) // postive effect
+            {
+                CalculateCarValueUsingCollison(_NoOfCollisons);
+                CalculateCarValueUsingPreviousOwner(_NoOfPreviousOwners);
+
+            }
+
+            return _FinalCarValue;
+
+        }
+
+        private void CalculateCarValueUsingAge(int age)
+        {
+            if (age < 600)
+            {
+                _FinalCarValue = _CurrentCarValue - (_CurrentCarValue * (decimal)(age * 0.5) /100);
+            }
+        }
+        private void CalculateCarValueUsingMiles(int miles)
+        {
+            if(miles < 150000)
+            {
+                _FinalCarValue = _FinalCarValue - (_FinalCarValue * (decimal)(Math.Floor((double)miles / 1000) * 0.2) / 100);
+            }
+        }
+        private void CalculateCarValueUsingPreviousOwner(int PrevOwnerCounts)
+        {
+            if(PrevOwnerCounts >= 2)
+            {
+                _FinalCarValue = _FinalCarValue - (_FinalCarValue * 25 / 100);
+            }
+            else if (PrevOwnerCounts == 1 )
+            {
+                _FinalCarValue = _FinalCarValue + (_FinalCarValue * 10 / 100);
+            }
+        }
+        public void CalculateCarValueUsingCollison(int CollisonCount)
+        {
+            if(CollisonCount >= 5)
+            {
+                _FinalCarValue = _FinalCarValue - (_FinalCarValue * 10 / 100);
+            }
+            else
+            {
+                _FinalCarValue = _FinalCarValue - (_FinalCarValue * 2 / 100);
+            }
+        }
+
+    }
+
+
+}
